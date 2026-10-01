@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Catálogo de productos</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f0f0f0; }
+    #estado { margin-top: 12px; color: #555; }
+    .error { color: #c00; }
+  </style>
+</head>
+<body>
+  <h1>Catálogo de productos</h1>
+
+  <button onclick="cargarTodos()">Cargar todos</button>
+  <input id="idProducto" type="number" placeholder="ID" style="width:80px">
+  <button onclick="buscarPorId()">Buscar por ID</button>
+
+  <div id="estado"></div>
+  <table id="tabla"></table>
+
+  <script>
+    const API = "http://localhost:8080/api/productos";
+
+    async function pedir(url) {
+      const estado = document.getElementById("estado");
+      estado.className = "";
+      estado.textContent = "Cargando...";
+      const inicio = performance.now();
+      try {
+        const respuesta = await fetch(url);
+        const datos = await respuesta.json();
+        if (!respuesta.ok) throw new Error(datos.mensaje || datos.message || "Error " + respuesta.status);
+        estado.textContent = "Respondió en " + Math.round(performance.now() - inicio) + " ms";
+        mostrar(Array.isArray(datos) ? datos : [datos]);
+      } catch (e) {
+        estado.className = "error";
+        estado.textContent = "Error: " + e.message + " (revisa la consola con F12)";
+        document.getElementById("tabla").innerHTML = "";
+      }
+    }
+
+    function mostrar(productos) {
+      document.getElementById("tabla").innerHTML =
+        "<tr><th>ID</th><th>Nombre</th><th>Categoría</th><th>Precio</th></tr>" +
+        productos.map(p =>
+          `<tr><td>${p.id}</td><td>${p.nombre}</td><td>${p.categoria}</td><td>$${p.precio.toFixed(2)}</td></tr>`
+        ).join("");
+    }
+
+    function cargarTodos() { pedir(API); }
+    function buscarPorId() {
+      const id = document.getElementById("idProducto").value;
+      if (id) pedir(API + "/" + id);
+    }
+  </script>
+</body>
+</html>
