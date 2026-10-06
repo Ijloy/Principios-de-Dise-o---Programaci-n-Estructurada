@@ -179,4 +179,3 @@ La primera llamada tarda ~1.5 s; la segunda, unos milisegundos.
 
 **Dereck** — Ingeniería de Software, Universidad de las Américas (UDLA), Quito.
 GitHub: [@ljloy](https://github.com/ljloy)
->>>>>>> ad1425c01be1cbcb2789c710d4b5cd91c64f8514
